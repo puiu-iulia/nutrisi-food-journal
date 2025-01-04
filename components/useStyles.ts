@@ -25,7 +25,7 @@ export const useStyles = () =>
             alignItems: 'center',
         },
         selectedDayView: {
-            backgroundColor: colors.light.tint,
+            backgroundColor: colors.dark.tint,
             height: 50,
             width: 50,
             justifyContent: 'center',
@@ -82,5 +82,10 @@ export const useStyles = () =>
             fontWeight: '600',
             color: '#486864',
             textAlign: 'center',
+        },
+        row: {
+            flexDirection: 'row',
+            paddingVertical: 16,
+            alignItems: 'center',
         },
     });
