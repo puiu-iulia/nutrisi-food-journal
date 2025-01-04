@@ -19,34 +19,30 @@ export const useWeeklyCalendar = (
         <IWeeklyCalendar[]>[],
     );
 
+    console.log('selected weekly calendar', selectedDate);
+
     const onDatePress = (date: number) => {
         setSelectedDate(date);
     };
 
     const updateWeeklyCalendar = () => {
-        // Get the current day of the week
-        const currentDay = moment().format('ddd');
-        const currentIndex = daysOfWeek.indexOf(currentDay);
+        // Get the start of the current week (Monday)
+        const startOfWeek = moment()
+            .startOf('isoWeek')
+            .startOf('day');
 
-        // Rotate the daysOfWeek array to start from the current day of the week
-        const rotatedDaysOfWeek = [
-            ...daysOfWeek.slice(currentIndex),
-            ...daysOfWeek.slice(0, currentIndex),
-        ];
-
-        const updatedWeeklyCalendar = rotatedDaysOfWeek.map(
-            (day, index) => {
-                const date = moment()
-                    .startOf('day')
-                    .add(index, 'days')
-                    .valueOf();
-                return {
-                    day: day,
-                    date: date,
-                    isSelected: date === selectedDate,
-                };
-            },
-        );
+        const updatedWeeklyCalendar = daysOfWeek.map((day, index) => {
+            const date = startOfWeek
+                .clone()
+                .add(index, 'days')
+                .startOf('day')
+                .valueOf();
+            return {
+                day: day,
+                date: date,
+                isSelected: date === selectedDate,
+            };
+        });
 
         setWeeklyCalendar(updatedWeeklyCalendar);
     };
