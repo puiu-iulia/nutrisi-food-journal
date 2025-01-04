@@ -8,44 +8,43 @@ import { Text, View } from '@/components/Themed';
 import { AddMeal } from '@/components/AddMeal';
 import { supabase } from '@/utils/supabase';
 import { DailyLog } from '@/utils/types';
+import { Pressable } from 'react-native-gesture-handler';
+import { Ionicons } from '@expo/vector-icons';
 
 const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
-
-type MealItem = {
-    id: string;
-    name: string;
-    calories: number;
-    icon?: string;
-};
 
 type MealSection = {
     title: string;
     data: DailyLog[];
 };
 
-export default function DailyLogs() {
-    const [mealData, setMealData] = useState<MealSection[]>([]);
+interface IDailyLogs {
+    mealData: DailyLog[];
+    onAddMeal: () => void;
+}
+
+export default function DailyLogs({
+    mealData,
+    onAddMeal,
+}: IDailyLogs) {
+    const [filteredMealData, setFilteredMealData] = useState<
+        MealSection[]
+    >([]);
 
     useEffect(() => {
-        fetchMealData();
-    }, []);
+        filterMealData();
+    }, [mealData]);
 
-    const fetchMealData = async () => {
-        const { data, error } = await supabase
-            .from('daily_logs')
-            .select('*');
-        if (error) {
-            console.error('Error fetching meals:', error);
-            return;
-        }
+    const filterMealData = async () => {
         // Transform the data into sections
         const sections: any = mealTypes.map((mealType) => {
             const mealItems =
-                data
+                mealData
                     ?.filter((meal) => meal.meal_type === mealType)
                     .map((meal) => ({
                         id: meal.id,
                         name: meal.name,
+                        is_gut_healthy: meal.is_gut_healthy,
                     })) || [];
 
             return {
@@ -53,7 +52,23 @@ export default function DailyLogs() {
                 data: mealItems,
             };
         });
-        setMealData(sections);
+        setFilteredMealData(sections);
+    };
+
+    const updateDailyLog = async (
+        id: string,
+        isGutHealthy: boolean,
+    ) => {
+        const { data, error } = await supabase
+            .from('daily_logs')
+            .update({ is_gut_healthy: isGutHealthy })
+            .eq('id', id);
+
+        if (error) {
+            console.error('Error updating daily log:', error);
+        } else {
+            onAddMeal(); // Refresh the data
+        }
     };
 
     const renderSectionHeader = ({
@@ -65,7 +80,7 @@ export default function DailyLogs() {
             <Text style={styles.sectionTitle}>{section.title}</Text>
             <AddMeal
                 mealType={section.title}
-                onAddMeal={() => fetchMealData()}
+                onAddMeal={() => onAddMeal()}
             />
         </View>
     );
@@ -74,6 +89,22 @@ export default function DailyLogs() {
         <View style={styles.mealItem}>
             <View style={styles.mealInfo}>
                 <Text style={styles.mealName}>{item.name}</Text>
+                <Pressable
+                    style={{ width: 40, height: 40 }}
+                    onPress={() =>
+                        updateDailyLog(item.id, !item.is_gut_healthy)
+                    }
+                >
+                    <Ionicons
+                        name={
+                            item.is_gut_healthy
+                                ? 'happy'
+                                : 'sad-outline'
+                        }
+                        size={24}
+                        color={'#486864'}
+                    />
+                </Pressable>
             </View>
         </View>
     );
@@ -81,11 +112,12 @@ export default function DailyLogs() {
     return (
         <View style={styles.container}>
             <SectionList
-                sections={mealData}
+                sections={filteredMealData}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
                 renderSectionHeader={renderSectionHeader}
                 stickySectionHeadersEnabled={false}
+                style={styles.list}
             />
         </View>
     );
@@ -96,6 +128,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f5f5f5',
     },
+    list: {
+        backgroundColor: 'white',
+    },
     sectionHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -105,7 +140,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     sectionTitle: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: '600',
     },
     calories: {
@@ -115,8 +150,8 @@ const styles = StyleSheet.create({
     mealItem: {
         flexDirection: 'row',
         backgroundColor: '#fff',
-        marginHorizontal: 16,
-        marginVertical: 4,
+        marginHorizontal: 24,
+        paddingVertical: 8,
     },
     icon: {
         fontSize: 24,
@@ -137,9 +172,10 @@ const styles = StyleSheet.create({
     },
     mealInfo: {
         flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     mealName: {
-        fontSize: 16,
-        fontWeight: '600',
+        fontSize: 15,
     },
 });
