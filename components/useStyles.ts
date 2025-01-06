@@ -52,10 +52,16 @@ export const useStyles = () =>
             fontSize: 13,
             textAlign: 'center',
         },
-        addButton: {
+        saveButton: {
             backgroundColor: colors.light.tint,
-            padding: 10,
-            borderRadius: 5,
+            padding: 16,
+            borderRadius: 8,
+            marginBottom: 16,
+            alignItems: 'center',
+        },
+        saveButtonText: {
+            fontSize: 16,
+            fontWeight: '700',
         },
         input: {
             borderWidth: 1,
@@ -87,5 +93,16 @@ export const useStyles = () =>
             flexDirection: 'row',
             paddingVertical: 16,
             alignItems: 'center',
+            backgroundColor: 'white',
+        },
+        spacedRow: {
+            flexDirection: 'row',
+            paddingVertical: 16,
+            alignItems: 'center',
+            backgroundColor: 'white',
+            justifyContent: 'space-between',
+        },
+        darkText: {
+            color: '#000',
         },
     });
