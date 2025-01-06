@@ -16,9 +16,14 @@ import { Ionicons } from '@expo/vector-icons';
 interface IAddMeal {
     mealType: string;
     onAddMeal: () => void;
+    logDate: number;
 }
 
-export const AddMeal = ({ mealType, onAddMeal }: IAddMeal) => {
+export const AddMeal = ({
+    mealType,
+    onAddMeal,
+    logDate,
+}: IAddMeal) => {
     const [name, setName] = useState('');
     const [isGutHealthy, setIsGutHealthy] = useState(false);
 
@@ -55,7 +60,7 @@ export const AddMeal = ({ mealType, onAddMeal }: IAddMeal) => {
         } = await supabase.auth.getUser();
 
         const newDailyLog = {
-            log_date: new Date().toISOString(),
+            log_date: new Date(logDate).toISOString(),
             name: name,
             is_gut_healthy: isGutHealthy,
             meal_type: mealType,
@@ -83,7 +88,7 @@ export const AddMeal = ({ mealType, onAddMeal }: IAddMeal) => {
     };
 
     return (
-        <View>
+        <View style={{ backgroundColor: '#fff' }}>
             <Pressable
                 style={styles.addMealButton}
                 onPress={() => {
@@ -101,36 +106,56 @@ export const AddMeal = ({ mealType, onAddMeal }: IAddMeal) => {
                 onDismiss={onDismiss}
             >
                 <BottomSheetView style={styles.bottomSheetView}>
-                    <Text>Add a New Meal</Text>
+                    {/* <Text style={styles.darkText}>
+                        Add a New Meal
+                    </Text> */}
                     <BottomSheetTextInput
                         placeholder="Food Name"
                         style={styles.input}
                         value={name}
                         onChangeText={setName}
                     />
-                    <View style={styles.row}>
-                        <Pressable onPress={toggleIsGutHealthy}>
-                            <Ionicons
-                                name={
-                                    isGutHealthy
-                                        ? 'checkbox-outline'
-                                        : 'square-outline'
-                                }
-                                size={24}
-                                color={'#486864'}
-                            />
-                        </Pressable>
-                        <Text>
-                            {isGutHealthy
-                                ? 'Is Gut Healthy'
-                                : "It's Not Gut Healthy"}
-                        </Text>
+                    <View style={styles.spacedRow}>
+                        <View style={styles.row}>
+                            <Pressable onPress={toggleIsGutHealthy}>
+                                <Ionicons
+                                    name={
+                                        isGutHealthy
+                                            ? 'checkbox-outline'
+                                            : 'square-outline'
+                                    }
+                                    size={24}
+                                    color={'#486864'}
+                                />
+                            </Pressable>
+                            <Text style={styles.darkText}>
+                                {'Is Gut Healthy'}
+                            </Text>
+                        </View>
+                        <View style={styles.row}>
+                            <Pressable onPress={toggleIsGutHealthy}>
+                                <Ionicons
+                                    name={
+                                        !isGutHealthy
+                                            ? 'checkbox-outline'
+                                            : 'square-outline'
+                                    }
+                                    size={24}
+                                    color={'#486864'}
+                                />
+                            </Pressable>
+                            <Text style={styles.darkText}>
+                                {"It's Not Gut Healthy"}
+                            </Text>
+                        </View>
                     </View>
                     <Pressable
-                        style={styles.addButton}
+                        style={styles.saveButton}
                         onPress={handleSaveMeal}
                     >
-                        <Text>Save Meal</Text>
+                        <Text style={styles.saveButtonText}>
+                            Save
+                        </Text>
                     </Pressable>
                 </BottomSheetView>
             </BottomSheetModal>

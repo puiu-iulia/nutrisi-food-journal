@@ -43,12 +43,14 @@ export default function TabOneScreen() {
             <WeeklyCalendar
                 onDateChange={(date) => {
                     fetchMealData(new Date(date));
+                    //@ts-ignore
                     setSelectedDate(new Date(date));
                     console.log('date', date, new Date(date));
                 }}
             />
             <DailyLogs
                 mealData={mealData}
+                logDate={selectedDate}
                 onAddMeal={() => fetchMealData(selectedDate)}
             />
         </View>

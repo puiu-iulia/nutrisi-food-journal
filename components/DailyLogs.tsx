@@ -21,11 +21,13 @@ type MealSection = {
 interface IDailyLogs {
     mealData: DailyLog[];
     onAddMeal: () => void;
+    logDate: number;
 }
 
 export default function DailyLogs({
     mealData,
     onAddMeal,
+    logDate,
 }: IDailyLogs) {
     const [filteredMealData, setFilteredMealData] = useState<
         MealSection[]
@@ -81,6 +83,7 @@ export default function DailyLogs({
             <AddMeal
                 mealType={section.title}
                 onAddMeal={() => onAddMeal()}
+                logDate={logDate}
             />
         </View>
     );
@@ -142,6 +145,7 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 18,
         fontWeight: '600',
+        color: '#000',
     },
     calories: {
         fontSize: 14,
@@ -174,8 +178,10 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
+        backgroundColor: '#fff',
     },
     mealName: {
         fontSize: 15,
+        color: '#000',
     },
 });
