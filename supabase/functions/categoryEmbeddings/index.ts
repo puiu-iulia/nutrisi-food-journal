@@ -38,23 +38,34 @@ const categories = [
 const generateEmbedding = await pipeline('feature-extraction', 'Supabase/gte-small');
 
 // Create our initial category embeddings
-serve(() => {
-  Promise.all(
-    categories.map(async (category) => {
-      const output = await generateEmbedding(category, {
-        pooling: 'mean',
-        normalize: true,
-      });
-      const embedding = Array.from(output.data);
-      return supabase.from('categories').insert({
-        category,
-        embedding,
-      });
-    })
-  );
+serve(async () => {
+  try {
+    await Promise.all(
+      categories.map(async (category) => {
+        const output = await generateEmbedding(category, {
+          pooling: 'mean',
+          normalize: true,
+        });
+        const embedding = Array.from(output.data);
+        const { error } = await supabase.from('categories').insert({
+          category,
+          embedding,
+        });
+        if (error) {
+          console.error(`Error inserting category ${category}:`, error);
+        }
+      })
+    );
 
-  // Return true
-  return new Response(JSON.stringify({ done: true }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+    // Return success response
+    return new Response(JSON.stringify({ done: true }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (err) {
+    console.error('Error in processing:', err);
+    return new Response(JSON.stringify({ error: 'Failed to process categories' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 });
