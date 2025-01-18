@@ -9,20 +9,28 @@ const generateEmbedding = await pipeline('feature-extraction', 'Supabase/gte-sma
 
 // Get embedding for a new item
 serve(async (req) => {
-  // Extract input string from JSON body
-  const { input } = await req.json();
+  try {
+    // Extract input string from JSON body
+    const { input } = await req.json();
 
-  // Generate the embedding from the user input
-  const output = await generateEmbedding(input, {
-    pooling: 'mean',
-    normalize: true,
-  });
+    // Generate the embedding from the user input
+    const output = await generateEmbedding(input, {
+      pooling: 'mean',
+      normalize: true,
+    });
 
-  // Extract the embedding output
-  const embedding = Array.from(output.data);
+    // Extract the embedding output
+    const embedding = Array.from(output.data);
 
-  // Return the embedding
-  return new Response(JSON.stringify({ embedding }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+    // Return the embedding
+    return new Response(JSON.stringify({ embedding }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (err) {
+    console.error('Error in generating embedding:', err);
+    return new Response(JSON.stringify({ error: 'Failed to generate embedding' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 });

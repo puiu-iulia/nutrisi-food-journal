@@ -15,4 +15,12 @@ export type DailyLog = {
     meal_type: string;
     is_gut_healthy: boolean;
     name: string;
+
 };
+
+export type Category = {
+    id: string;
+    category: string;
+    embedding: any;
+    is_gut_healthy: boolean;
+}

@@ -19,7 +19,16 @@ export default function TabOneScreen() {
         const endOfDay = moment(date).endOf('day').toISOString();
         const { data, error } = await supabase
             .from('daily_logs')
-            .select('*')
+            .select(
+                `
+                    id,
+                    name,
+                    log_date,
+                    meal_type,
+                    is_gut_healthy,
+                    category_id (id, category, is_gut_healthy)
+                `,
+            )
             .gte('log_date', startOfDay)
             .lt('log_date', endOfDay);
 

@@ -59,12 +59,30 @@ export const AddMeal = ({
             data: { user },
         } = await supabase.auth.getUser();
 
+        // Get embedding for the grocery item
+        const { data } = await supabase.functions.invoke(
+            'getEmbedding',
+            {
+                body: { input: name },
+            },
+        );
+        // Match the embedding to a category
+        const { data: documents } = await supabase.rpc(
+            'match_category',
+            {
+                query_embedding: data.embedding,
+                match_threshold: 0.8,
+                match_count: 1,
+            },
+        );
+
         const newDailyLog = {
             log_date: new Date(logDate).toISOString(),
             name: name,
             is_gut_healthy: isGutHealthy,
             meal_type: mealType,
             user_id: user?.id,
+            category_id: documents[0].id,
         };
 
         const { data: dailyLogData, error: dailyLogError } =

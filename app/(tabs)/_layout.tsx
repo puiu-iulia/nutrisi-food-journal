@@ -62,6 +62,18 @@ export default function TabLayout() {
                             ),
                         }}
                     />
+                    <Tabs.Screen
+                        name="grocery"
+                        options={{
+                            title: 'Grocery',
+                            tabBarIcon: ({ color }) => (
+                                <TabBarIcon
+                                    name="shopping-basket"
+                                    color={color}
+                                />
+                            ),
+                        }}
+                    />
                 </Tabs>
             </BottomSheetModalProvider>
         </GestureHandlerRootView>
